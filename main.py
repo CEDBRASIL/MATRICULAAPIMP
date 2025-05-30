@@ -16,6 +16,7 @@ BASIC_B64 = os.getenv("BASIC_B64")  # Basic Auth para pegar token
 UNIDADE_ID = os.getenv("UNIDADE_ID")  # Exemplo: 4158
 MP_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
+TOKEN_KEY = os.getenv("TOKEN_KEY")  # Token para operações
 
 CPF_PREFIXO = "20254158"
 cpf_lock = threading.Lock()

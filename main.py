@@ -138,10 +138,16 @@ def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
         "token": token_key,
         "cursos": ",".join(map(str, cursos))  # Certificar que os IDs dos cursos estão sendo enviados corretamente
     }
+    log(f"[MAT] Enviando payload: {payload}")  # Log detalhado do payload
+
     r = requests.post(f"{OM_BASE}/alunos/matricula/{aluno_id}",
                       data=payload,
                       headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)
     log(f"[MAT] {r.status_code} | {r.text[:80]}")
+
+    if not r.ok:
+        log(f"[MAT] Erro ao matricular aluno {aluno_id}: {r.text}")
+
     return r.ok and r.json().get("status") == "true"
 
 def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) -> str:

@@ -111,7 +111,11 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str, cursos
             "cidade": "Brasília",
             "endereco": "Não informado",
             "bairro": "Centro",
-            "cep": "70000-000"
+            "cep": "70000-000",
+            "complemento": "",
+            "numero": "0",
+            "unidade_id":"4158",
+
         }
         r = requests.post(f"{OM_BASE}/alunos", data=payload,
                           headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)

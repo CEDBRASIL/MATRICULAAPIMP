@@ -1,0 +1,1397 @@
+{
+	"info": {
+		"_postman_id": "d9ef46b5-2b54-4262-9de2-5d92d176e26d",
+		"name": "API Ouro Moderno - EAD - Versão 2.0",
+		"description": "# Apresentação\n\nDocumentação para utilização da API Ouro Moderno - EAD\n\n# Autenticação\n\nÉ preciso utilizar autenticação para fazer requisições a esta API.\n\nPara realizar a autenticação deve-se utilizar o KEY disponível do Portal do Licenciado > EAD > API.\n\nA autenticação utilizada é a 'Basic Auth', o 'username' é a KEY e o 'password' deve ficar em branco\n\n# Error Codes\n\n**400 – Bad Request**\n\nDados enviados de forma incorreta ou fora do padrão\n\n**403 – Forbidden**\n\nSem autorização suficiente para acessar o recurso desejado\n\n**401 – Unauthorized**\n\nSem autorização para acessar a API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "44482414"
+	},
+	"item": [
+		{
+			"name": "Unidades",
+			"item": [
+				{
+					"name": "Unidade",
+					"item": [
+						{
+							"name": "Obter Unidade",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/unidades/ID_UNIDADE",
+								"description": "Este recurso permite a obtenção dos dados da unidade.\n\n* * *\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": \"1\",\n        \"nome\": \"NOME DA UNIDADE 1\",\n        \"razao_social\": \"NOME DA UNIDADE 1 LTDA \",\n        \"situacao\": \"inativo\",\n        \"data_cadastro\": \"2018-08-03 18:10:45\",\n        \"rede\": \"Ouro\",\n        \"key\": \"6070e54fb69614dce000000\"\n    }\n}\n\n```"
+							},
+							"response": []
+						},
+						{
+							"name": "Listar Unidades",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/unidades",
+								"description": "Este recurso permite a obtenção das **unidades** da rede.\n\n* * *\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": [\n        {\n            \"id\": \"1\",\n            \"nome\": \"NOME DA UNIDADE 1\",\n            \"razao_social\": \"NOME DA UNIDADE 1 LTDA\",\n            \"situacao\": \"inativo\",\n            \"data_cadastro\": \"2018-08-03 18:10:45\",\n            \"rede\": \"Ouro\",\n            \"key\": \"6070e54fb69614dce000000\"\n        },\n        {\n            \"id\": \"2\",\n            \"nome\": \"NOME DA UNIDADE 2\",\n            \"razao_social\": \"NOME DA UNIDADE 2 LTDA\",\n            \"situacao\": \"ativo\",\n            \"data_cadastro\": \"2018-08-03 18:10:45\",\n            \"rede\": \"Ouro\",\n            \"key\": \"6070e54fb69614dce000000\"\n        },       \n    ],\n    \"total\": 2\n}\n\n```"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Token Unidade",
+					"item": [
+						{
+							"name": "Obter token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/unidades/token/ID_UNIDADE",
+								"description": "Rota para obter o token da unidade\n\n___\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": \"1\",\n        \"nome\": \"Nome da unidade 1\",\n        \"token\": \"ed27226e-0000-000-0000-a0369f00a8c4b8\"\n    }\n}\n```"
+							},
+							"response": []
+						},
+						{
+							"name": "Verificar Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/unidades/token/check/TOKEN",
+								"description": "Rota para verificar se o token é válido\n\n* * *\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": \"ed27226e-0000-0000-0000-a0369fa8c4b8\"\n}\n```"
+							},
+							"response": []
+						}
+					],
+					"description": "O Token da Uniade de ser enviado nos endpoits de cadastro, para validar e vincular o cadastro a unidade.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Cursos",
+					"item": [
+						{
+							"name": "Listar Cursos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/unidades/cursos/ID_UNIDADE",
+								"description": "Este recurso permite a obtenção dos cursos disponiveis para a unidade.\n\n___\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": [\n        {\n            \"id\": \"35\",\n            \"modulo\": \"4\",\n            \"nome\": \"Administrativo\",\n            \"aulas\": \"7\",\n            \"carga\": \"11\",\n            \"descricao\": \"O curso de Administrativo visa capacitar o profissional para executar tarefas administrativas visando o alcance dos objetivos da empresa ou instituição em que está trabalhando, através de diversos conceitos administrativos e contábeis.\"\n        },\n        {...}\n    ],\n    \"total\": 97\n}\n\n```"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Alunos",
+			"item": [
+				{
+					"name": "Alunos",
+					"item": [
+						{
+							"name": "Criar aluno",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "token",
+											"value": "TOKEN_UNIDADE",
+											"description": "Token da Unidade",
+											"type": "text"
+										},
+										{
+											"key": "nome",
+											"value": "Pedro",
+											"description": "Nome do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "data_nascimento",
+											"value": "2001-10-10",
+											"description": "Data de nascimento do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "pedro@mail.com",
+											"description": "E-mail válido do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "fone",
+											"value": "(00) 0000.0000",
+											"description": "Telefone do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "celular",
+											"value": "(00) 0 0000.0000",
+											"description": "Celular do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "doc_cpf",
+											"value": "678.009.420-07",
+											"description": "CPF do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "doc_rg",
+											"value": "00000000000",
+											"description": "RG do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "pais",
+											"value": "Brasil",
+											"description": "Pais do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "uf",
+											"value": "SP",
+											"description": "Estado do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "cidade",
+											"value": "São Paulo",
+											"description": "Cdiade do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "endereco",
+											"value": "Rua Assis Brasil, 123",
+											"description": "Endereço do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "complemento",
+											"value": "",
+											"description": "Completmento do endereço do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "bairro",
+											"value": "Centro",
+											"description": "Bairro do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "cep",
+											"value": "95780-000",
+											"description": "Cep d Aluno",
+											"type": "text"
+										},
+										{
+											"key": "senha",
+											"value": "",
+											"description": "Senha do aluno (opcional)",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "login_info",
+											"value": "CPF",
+											"description": "Informa qual informação será responsável pelo login. Padrão CPF (CPF, RG ou EMAIL) (opcional)",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "senha_inicial",
+											"value": "1",
+											"description": "Infomar que o aluno deve trocar a senha. (0 ou 1). Valor padrão = 1. (opcional)",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos",
+								"description": "Rota para criar um aluno, definindo os dados do aluno que será utilizada para acessar o portal e gerar matrícula.\n\n*   Também é possível enviar o parâmetro \"senha\" para atribuir uma senha para o usuário.\n*   O login do aluno sempre será o campo CPF, onde deve ser enviando somente os números\n    \n\n___\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": \"294141\",\n        \"nome\": \"Pedro\",\n        \"usuario\": \"67800942007\",\n        \"senha\": \"415583\",\n        \"unidade\": {\n            \"id\": \"1499\",\n            \"nome\": \"Teste Ouro Moderno (loja virtual nova)\"\n        }\n    }\n}\n```"
+							},
+							"response": []
+						},
+						{
+							"name": "Obter Aluno",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/alunos/70945",
+								"description": "Retorna um objeto com os dados de um aluno específico."
+							},
+							"response": []
+						},
+						{
+							"name": "Listar Alunos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url_base}}/alunos",
+									"host": [
+										"{{url_base}}"
+									],
+									"path": [
+										"alunos"
+									],
+									"query": [
+										{
+											"key": "nome",
+											"value": "pedro",
+											"description": "Nome do aluno",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "pedro@mail.com",
+											"description": "E-mail do Aluno",
+											"disabled": true
+										},
+										{
+											"key": "cpf",
+											"value": "000.000.000-000",
+											"description": "CPF do aluno",
+											"disabled": true
+										},
+										{
+											"key": "usuario",
+											"value": "0203100",
+											"description": "Usuário do ALuno",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "2",
+											"description": "Página atual",
+											"disabled": true
+										},
+										{
+											"key": "size",
+											"value": "10",
+											"description": "Quantidade de itens por página",
+											"disabled": true
+										},
+										{
+											"key": "id_unidade",
+											"value": "559",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Este recurso permite a obtenção dos alunos. Pode ser utilizados alguns parâmetros como filtro da listagem.\n\nPor padrão a quantidade de regsitros por página é de 1000 registros.\n\n%20\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": [\n        {\n            \"id\": \"1\",\n            \"nome\": \"PEDRO SILVA\",\n            \"usuario\": \"00321114\",\n            \"situacao\": \"ativo\",\n            \"email\": \"pedro@mail.com\",\n            \"cpf\": \"000000000000\",\n            \"rg\": \"00000000000\",\n            \"telefone\": \"(00) 0000-00000\",\n            \"celular\": \"\",\n            \"unidade\": {\n                \"id\": \"1\",\n                \"nome\": \"nome da undade 1\"\n            }\n        },\n        {...}\n   ],\n   \"pagina\": {\n        \"total\": \"2633\",\n        \"page\": 1,\n        \"size\": 1000\n    }\n}\n\n```"
+							},
+							"response": []
+						},
+						{
+							"name": "Editar aluno",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "token",
+											"value": "TOKEN_UNIDADE",
+											"description": "Token da Unidade",
+											"type": "text"
+										},
+										{
+											"key": "nome",
+											"value": "Pedro",
+											"description": "Nome do Aluno",
+											"type": "text"
+										},
+										{
+											"key": "data_nascimento",
+											"value": "2001-10-10",
+											"description": "Data de nascimento do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "pedro@mail.com",
+											"description": "E-mail válido do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "fone",
+											"value": "(00) 0000.0000",
+											"description": "Telefone do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "celular",
+											"value": "(00) 0 0000.0000",
+											"description": "Celular do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "doc_cpf",
+											"value": "678.009.420-07",
+											"description": "CPF do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "doc_rg",
+											"value": "00000000000",
+											"description": "RG do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "pais",
+											"value": "Brasil",
+											"description": "Pais do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "uf",
+											"value": "SP",
+											"description": "Estado do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "cidade",
+											"value": "São Paulo",
+											"description": "Cdiade do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "endereco",
+											"value": "Rua Assis Brasil, 123",
+											"description": "Endereço do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "complemento",
+											"value": "",
+											"description": "Completmento do endereço do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "bairro",
+											"value": "Centro",
+											"description": "Bairro do Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "cep",
+											"value": "95780-000",
+											"description": "Cep d Aluno",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "senha",
+											"value": "",
+											"description": "Senha do aluno (opcional)",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos/ID_ALUNO",
+								"description": "Rota para editar um aluno.\n\n---\n\n### Response\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": \"294141\",\n        \"nome\": \"Pedro\",\n        \"usuario\": \"67800942007\",\n        \"senha\": \"415583\",\n        \"unidade\": {\n            \"id\": \"1499\",\n            \"nome\": \"Teste Ouro Moderno (loja virtual nova)\"\n        }\n    }\n}\n\n ```"
+							},
+							"response": []
+						},
+						{
+							"name": "Excluir Aluno",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{url_base}}/alunos/ID_ALUNO",
+								"description": "Rota para excluir um aluno.\n\n**IMPORTANTE está ação não é reversível**"
+							},
+							"response": []
+						},
+						{
+							"name": "Transferir",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "token",
+											"value": "TOKEN_UNIDADE",
+											"description": "Token da Unidade Origem",
+											"type": "text"
+										},
+										{
+											"key": "aluno_id",
+											"value": "ID_ALUNO",
+											"description": "ID do ALuno",
+											"type": "text"
+										},
+										{
+											"key": "unidade_id",
+											"value": "ID_UNDADE_DESTINO",
+											"description": "ID da Unidade Destino",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos/transferir"
+							},
+							"response": [
+								{
+									"name": "200 OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "token",
+													"value": "TOKEN_UNIDADE",
+													"description": "Token da Unidade Origem",
+													"type": "text"
+												},
+												{
+													"key": "aluno_id",
+													"value": "ID_ALUNO",
+													"description": "ID do ALuno",
+													"type": "text"
+												},
+												{
+													"key": "unidade_id",
+													"value": "ID_UNDADE_DESTINO",
+													"description": "ID da Unidade Destino",
+													"type": "text"
+												}
+											]
+										},
+										"url": "{{url_base}}/alunos/transferir"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 16 Mar 2023 12:05:11 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET,PUT,POST,DELETE"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "max-age=60, private, proxy-revalidate"
+										},
+										{
+											"key": "CF-Cache-Status",
+											"value": "DYNAMIC"
+										},
+										{
+											"key": "Report-To",
+											"value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=ZNTeo%2Br%2FXOvTFWM5sxKfg1u%2B458Ku117Xm7WxkPnTY8uAt7PjCYitnt7GDC4reJgmUFddHWsLp71XB5Iha7cOJxqRCkBIp%2FKqL%2F%2Bwq2ftU1LAlGAis%2BI4qpy0DIKjIeg5adwTMvfikw%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "NEL",
+											"value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "Server",
+											"value": "cloudflare"
+										},
+										{
+											"key": "CF-RAY",
+											"value": "7a8cdcdfdf776b00-GRU"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "br"
+										},
+										{
+											"key": "alt-svc",
+											"value": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": \"8101\",\n        \"nome\": \"AUGUSTO\",\n        \"usuario\": \"omaugusto\",\n        \"unidade\": {\n            \"id\": \"4\",\n            \"nome\": \"OURO MODERNO\"\n        }\n    }\n}"
+								},
+								{
+									"name": "403 Forbidden",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "token",
+													"value": "TOKEN_UNIDADE",
+													"description": "Token da Unidade Origem",
+													"type": "text"
+												},
+												{
+													"key": "aluno_id",
+													"value": "ID_ALUNO",
+													"description": "ID do ALuno",
+													"type": "text"
+												},
+												{
+													"key": "unidade_id",
+													"value": "ID_UNDADE_DESTINO",
+													"description": "ID da Unidade Destino",
+													"type": "text"
+												}
+											]
+										},
+										"url": "{{url_base}}/alunos/transferir"
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 16 Mar 2023 12:09:02 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET,PUT,POST,DELETE"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "max-age=60, private, proxy-revalidate"
+										},
+										{
+											"key": "CF-Cache-Status",
+											"value": "DYNAMIC"
+										},
+										{
+											"key": "Report-To",
+											"value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=X8KSB1mW3AS7hHrsLHFki3LvmzeyDEL05s5G7RBirTv4%2B3aFl3E%2BO81etLtLZ5cxq9qyx4ttz%2B43P38s62RzsI1NnQLYXeZvO2l6aSaboGlHEwzNrrFn8EBJJ3DZnlpkm1DzNpRYbgg%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "NEL",
+											"value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "Server",
+											"value": "cloudflare"
+										},
+										{
+											"key": "CF-RAY",
+											"value": "7a8ce2847bab6b00-GRU"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "br"
+										},
+										{
+											"key": "alt-svc",
+											"value": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"false\",\n    \"info\": \"Unidade n\\u00e3o foi encontrado.\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Redefinir Senha",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "token",
+											"value": "TOKEN_UNIDADE",
+											"description": "Token da Unidade Origem",
+											"type": "text"
+										},
+										{
+											"key": "aluno_id",
+											"value": "ID_ALUNO",
+											"description": "ID do ALuno",
+											"type": "text"
+										},
+										{
+											"key": "senha",
+											"value": "SENHA",
+											"description": "Nova Senha (Opcional)",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos/redefinir_senha"
+							},
+							"response": [
+								{
+									"name": "200 OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "token",
+													"value": "TOKEN_UNIDADE",
+													"description": "Token da Unidade Origem",
+													"type": "text"
+												},
+												{
+													"key": "aluno_id",
+													"value": "ID_ALUNO",
+													"description": "ID do ALuno",
+													"type": "text"
+												},
+												{
+													"key": "unidade_id",
+													"value": "ID_UNDADE_DESTINO",
+													"description": "ID da Unidade Destino",
+													"type": "text"
+												}
+											]
+										},
+										"url": "{{url_base}}/alunos/transferir"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 16 Mar 2023 12:05:11 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET,PUT,POST,DELETE"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "max-age=60, private, proxy-revalidate"
+										},
+										{
+											"key": "CF-Cache-Status",
+											"value": "DYNAMIC"
+										},
+										{
+											"key": "Report-To",
+											"value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=ZNTeo%2Br%2FXOvTFWM5sxKfg1u%2B458Ku117Xm7WxkPnTY8uAt7PjCYitnt7GDC4reJgmUFddHWsLp71XB5Iha7cOJxqRCkBIp%2FKqL%2F%2Bwq2ftU1LAlGAis%2BI4qpy0DIKjIeg5adwTMvfikw%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "NEL",
+											"value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "Server",
+											"value": "cloudflare"
+										},
+										{
+											"key": "CF-RAY",
+											"value": "7a8cdcdfdf776b00-GRU"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "br"
+										},
+										{
+											"key": "alt-svc",
+											"value": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": \"8101\",\n        \"nome\": \"AUGUSTO\",\n        \"usuario\": \"omaugusto\",\n        \"senha\": \"Krm6av$G\",\n        \"unidade\": {\n            \"id\": \"4\",\n            \"nome\": \"OURO MODERNO\"\n        }\n    }\n}"
+								},
+								{
+									"name": "403 Forbidden",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "token",
+													"value": "TOKEN_UNIDADE",
+													"description": "Token da Unidade Origem",
+													"type": "text"
+												},
+												{
+													"key": "aluno_id",
+													"value": "ID_ALUNO",
+													"description": "ID do ALuno",
+													"type": "text"
+												},
+												{
+													"key": "unidade_id",
+													"value": "ID_UNDADE_DESTINO",
+													"description": "ID da Unidade Destino",
+													"type": "text"
+												}
+											]
+										},
+										"url": "{{url_base}}/alunos/transferir"
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 16 Mar 2023 12:09:02 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET,PUT,POST,DELETE"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "max-age=60, private, proxy-revalidate"
+										},
+										{
+											"key": "CF-Cache-Status",
+											"value": "DYNAMIC"
+										},
+										{
+											"key": "Report-To",
+											"value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=X8KSB1mW3AS7hHrsLHFki3LvmzeyDEL05s5G7RBirTv4%2B3aFl3E%2BO81etLtLZ5cxq9qyx4ttz%2B43P38s62RzsI1NnQLYXeZvO2l6aSaboGlHEwzNrrFn8EBJJ3DZnlpkm1DzNpRYbgg%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "NEL",
+											"value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "Server",
+											"value": "cloudflare"
+										},
+										{
+											"key": "CF-RAY",
+											"value": "7a8ce2847bab6b00-GRU"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "br"
+										},
+										{
+											"key": "alt-svc",
+											"value": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"false\",\n    \"info\": \"Unidade n\\u00e3o foi encontrado.\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Matrícula",
+					"item": [
+						{
+							"name": "Criar matrícula do aluno",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "token",
+											"value": "8125092c-af49-11ec-b0f3-a0369fa8c118",
+											"description": "Token da unidade",
+											"type": "text"
+										},
+										{
+											"key": "cursos",
+											"value": "123,161",
+											"contentType": "Auto",
+											"description": "Cursos do aluno (ex. 123,321,521)",
+											"type": "text"
+										},
+										{
+											"key": "dias",
+											"value": "",
+											"contentType": "Auto",
+											"description": "Dias para fim do contrato (opcional)",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos/matricula/ID_ALUNO",
+								"description": "Os cursos devem ser enviados com os códigos separados por vírgula.\n\n___\n\nResponse\n\n``` json\n{\n    \"status\": \"true\",\n    \"data\": {\n        \"id\": 433915,\n        \"data_fim\": \"2022-07-29\"\n    }\n}\n```"
+							},
+							"response": []
+						},
+						{
+							"name": "Remover curso do aluno",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "token",
+											"value": "8125092c-af49-11ec-b0f3-a0369fa8c118",
+											"description": "Token da unidade",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos/removercurso/ID_ALUNO/ID_CURSO",
+								"description": "Os cursos devem ser enviados com os códigos separados por vírgula.\n\n---\n\nResponse\n\n``` json\n{\n  \"status\": \"true\",\n  \"data\": {\n    \"idaluno\": \"8097\",\n    \"idcurso\": \"123\"\n  }\n}\n\n```"
+							},
+							"response": [
+								{
+									"name": "Remover curso do aluno",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "token",
+													"value": "8125092c-af49-11ec-b0f3-a0369fa8c118",
+													"description": "Token da unidade",
+													"type": "text"
+												}
+											]
+										},
+										"url": "{{url_base}}/alunos/removercurso/ID_ALUNO/ID_CURSO"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 09 Nov 2022 18:54:13 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET,PUT,POST,DELETE"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "max-age=60, private, proxy-revalidate"
+										},
+										{
+											"key": "CF-Cache-Status",
+											"value": "DYNAMIC"
+										},
+										{
+											"key": "Report-To",
+											"value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=5%2F4YKy6yYm9U%2B%2BnbLVEGGn6f00344tvrWCjkgUyVlX6iBhSbi6cSVjDZTrXKbIaldrIh7iTDeqBQwNgFLePjjFYXP7p5R5MGHE7j0bMXJ2DPDFVL5vtsP7matfGXuOdI%2B%2BcMFiIPc6g%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "NEL",
+											"value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+										},
+										{
+											"key": "Server",
+											"value": "cloudflare"
+										},
+										{
+											"key": "CF-RAY",
+											"value": "7678c173edd9601f-GRU"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "br"
+										},
+										{
+											"key": "alt-svc",
+											"value": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"true\",\n    \"data\": {\n        \"idaluno\": \"8097\",\n        \"idcurso\": \"123\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Listar cursos do aluno",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/alunos/cursos/ID_ALUNO"
+							},
+							"response": []
+						},
+						{
+							"name": "Detalhes do curso do aluno",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/aluno/ID_ALUNO/contrato/ID_CONTRATO/curso/ID_CURSO"
+							},
+							"response": []
+						},
+						{
+							"name": "Certificado do curso",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/certificado/aluno/ID_ALUNO/contrato/ID_CONTRATO/curso/ID_CURSO"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Token Aluno",
+					"item": [
+						{
+							"name": "Obter token do aluno  (id aluno)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/alunos/token/ID_ALUNO"
+							},
+							"response": []
+						},
+						{
+							"name": "Obter token do aluno (usuario e senha)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "usuario",
+											"value": "usuario_aluno",
+											"type": "text"
+										},
+										{
+											"key": "senha",
+											"value": "senha_aluno",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url_base}}/alunos/token"
+							},
+							"response": []
+						},
+						{
+							"name": "Verificar token do aluno",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url_base}}/alunos/token/check/TOKEN_ALUNO"
+							},
+							"response": []
+						},
+						{
+							"name": "Acessar ambiente do aluno",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://meuappdecursos.com.br/index.php?pag=entrar&token=TOKEN_ALUNO",
+									"protocol": "https",
+									"host": [
+										"meuappdecursos",
+										"com",
+										"br"
+									],
+									"path": [
+										"index.php"
+									],
+									"query": [
+										{
+											"key": "pag",
+											"value": "entrar"
+										},
+										{
+											"key": "token",
+											"value": "TOKEN_ALUNO"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "O token do aluno tem é utilizado para realizar o acesso ao portal, sem o aluno ter que colocar usuario e senha."
+				}
+			]
+		},
+		{
+			"name": "Relatorios",
+			"item": [
+				{
+					"name": "Alunos Atividades",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/relatorio/alunos_atividade",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"relatorio",
+								"alunos_atividade"
+							],
+							"query": [
+								{
+									"key": "data_inicial",
+									"value": "2022-03-11",
+									"description": "Data de início do período a ser listado.",
+									"disabled": true
+								},
+								{
+									"key": "data_final",
+									"value": "2022-04-01",
+									"description": "Data de final do período a ser listado.",
+									"disabled": true
+								},
+								{
+									"key": "id_aluno",
+									"value": "123",
+									"description": "Id do Aluno",
+									"disabled": true
+								},
+								{
+									"key": "id_unidade",
+									"value": "456",
+									"description": "Id da Unidade",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Página",
+									"disabled": true
+								},
+								{
+									"key": "alunos",
+									"value": "123,456,789",
+									"description": "Ids dos aluno separados por virgula",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Este recurso permite a obtenção dos alunos que realização atividades do portal EAD. Pode ser utilizados alguns parâmetros como filtro da listagem."
+					},
+					"response": []
+				},
+				{
+					"name": "Alunos Log",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/relatorio/alunos_log",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"relatorio",
+								"alunos_log"
+							],
+							"query": [
+								{
+									"key": "data_inicial",
+									"value": "2022-03-11",
+									"description": "Data de início do período a ser listado.",
+									"disabled": true
+								},
+								{
+									"key": "data_final",
+									"value": "2022-04-01",
+									"description": "Data de final do período a ser listado.",
+									"disabled": true
+								},
+								{
+									"key": "id_aluno",
+									"value": "123",
+									"description": "Id do Aluno",
+									"disabled": true
+								},
+								{
+									"key": "id_unidade",
+									"value": "456",
+									"description": "Id da Unidade",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Este recurso permite a obtenção dos alunos que realização atividades do portal EAD. Pode ser utilizados alguns parâmetros como filtro da listagem."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": {
+			"username": "API_KEY"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url_base",
+			"value": "https://meuappdecursos.com.br/ws/v2",
+			"type": "string"
+		}
+	]
+}

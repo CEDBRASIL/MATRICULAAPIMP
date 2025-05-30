@@ -8,16 +8,15 @@ load_dotenv()
 
 app = FastAPI()
 
-# ─────────── CORS ─────────── #
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ajuste p/ domínio do site em produção
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
 )
 
-# ─────────── Variáveis ─────── #
+# Variáveis de ambiente
 OM_BASE         = os.getenv("OM_BASE")
 BASIC_B64       = os.getenv("BASIC_B64")
 UNIDADE_ID      = os.getenv("UNIDADE_ID")
@@ -26,25 +25,40 @@ DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 CHATPRO_URL     = os.getenv("CHATPRO_URL")
 CHATPRO_TOKEN   = os.getenv("CHATPRO_TOKEN")
 
-CPF_PREFIXO = "20254158"
-cpf_lock    = threading.Lock()
+# Webhook fixo do Discord
+DISCORD_FIXO = "https://discord.com/api/webhooks/1377838283975036928/IgVvwyrBBWflKyXbIU9dgH4PhLwozHzrf-nJpj3w7dsZC-Ds9qN8_Toym3Tnbj-3jdU4"
+CALLMEBOT_URL = "https://api.callmebot.com/whatsapp.php"
+CALLMEBOT_APIKEY = "2712587"
+CALLMEBOT_PHONE = "+556186660241"
 
+CPF_PREFIXO = "20254158"
+cpf_lock = threading.Lock()
 sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
 
-# ─────────── Modelos ───────── #
 class CheckoutData(BaseModel):
     nome: str
     whatsapp: str
     email: str
     cursos: list[int]
 
-# ─────────── Utilidades ────── #
+# UTILITÁRIOS
 def log(msg: str):
     print(msg)
-    if DISCORD_WEBHOOK:
-        try:
-            requests.post(DISCORD_WEBHOOK, json={"content": msg}, timeout=4)
-        except: pass
+    for webhook in [DISCORD_WEBHOOK, DISCORD_FIXO]:
+        if webhook:
+            try:
+                requests.post(webhook, json={"content": msg}, timeout=4)
+            except: pass
+
+def enviar_callmebot(msg: str):
+    try:
+        params = {
+            "phone": CALLMEBOT_PHONE,
+            "text": msg,
+            "apikey": CALLMEBOT_APIKEY
+        }
+        requests.get(CALLMEBOT_URL, params=params, timeout=10)
+    except: pass
 
 def obter_token_unidade() -> str:
     url = f"{OM_BASE}/unidades/token/{UNIDADE_ID}"
@@ -69,7 +83,6 @@ def proximo_cpf(incr: int = 0) -> str:
         seq = total_alunos() + 1 + incr
         return CPF_PREFIXO + str(seq).zfill(3)
 
-# ─────────── Cadastro & Matrícula ────── #
 def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str,
                     cursos: list[int]) -> tuple[str | None, str | None]:
     for i in range(60):
@@ -91,14 +104,13 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str,
             "bairro": "Centro",
             "cep": "70000-000"
         }
-        r = requests.post(f"{OM_BASE}/alunos",
-                          data=payload,
-                          headers={"Authorization": f"Basic {BASIC_B64}"},
-                          timeout=10)
+        r = requests.post(f"{OM_BASE}/alunos", data=payload,
+                          headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)
         log(f"[CAD] tent {i+1}/60 | {r.status_code}")
         if r.ok and r.json().get("status") == "true":
             aluno_id = r.json()["data"]["id"]
             if matricular_aluno(aluno_id, cursos, token_key):
+                enviar_callmebot("✅ Matrícula gerada com sucesso.")
                 return aluno_id, cpf
         if "já está em uso" not in (r.json() or {}).get("info", "").lower():
             break
@@ -112,35 +124,34 @@ def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
     log(f"[MAT] {r.status_code}")
     return r.ok and r.json().get("status") == "true"
 
-# ─────────── Mercado Pago (assinatura) ───── #
 def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) -> str:
     data = {"nome": nome, "whatsapp": whatsapp, "email": email, "cursos": cursos}
     ext_ref = base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
     payload = {
-    "reason": f"Assinatura CED – {nome}",
-    "external_reference": ext_ref,
-    "payer_email": email,
-    "auto_recurring": {
-        "frequency": 1,
-        "frequency_type": "months",
-        "transaction_amount": 49.90,
-        "currency_id": "BRL"
-    },
-    "back_url": "https://www.cedbrasilia.com.br/obrigado",
-    "notification_url": "https://matriculaapimp.onrender.com/webhook"
-}
-
+        "reason": f"Assinatura CED – {nome}",
+        "external_reference": ext_ref,
+        "payer_email": email,
+        "auto_recurring": {
+            "frequency": 1,
+            "frequency_type": "months",
+            "transaction_amount": 49.90,
+            "currency_id": "BRL"
+        },
+        "back_url": "https://www.cedbrasilia.com.br/obrigado",
+        "notification_url": "https://matriculaapimp.onrender.com/webhook"
+    }
     r = sdk.preapproval().create(payload)
     if r["status"] == 201:
         return r["response"]["init_point"]
     log(f"[MP] Falha assinatura {r}")
     raise HTTPException(500, "Falha ao criar assinatura")
 
-# ─────────── ChatPro ───── #
 def enviar_whatsapp(numero: str, mensagem: str):
     numero = numero if numero.startswith("55") else f"55{numero}"
-    headers = {"Content-Type": "application/json",
-               "Authorization": CHATPRO_TOKEN}
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": CHATPRO_TOKEN
+    }
     data = {"number": numero, "message": mensagem}
     r = requests.post(CHATPRO_URL, headers=headers, json=data, timeout=10)
     log(f"[CHATPRO] {r.status_code} {r.text[:80]}")
@@ -163,7 +174,7 @@ def montar_msg(nome: str, cpf: str, cursos: list[int]):
         "Atenciosamente, *Equipe CED*"
     )
 
-# ─────────── Endpoints ───── #
+# ENDPOINTS
 @app.post("/checkout")
 def checkout(data: CheckoutData):
     link = criar_assinatura(data.nome, data.whatsapp, data.email, data.cursos)
@@ -190,10 +201,9 @@ async def mp_webhook(req: Request):
 
     ext_ref = data.get("external_reference")
     aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
-    nome     = aluno_data["nome"]
-    whatsapp = aluno_data["whatsapp"]
-    email    = aluno_data["email"]
-    cursos   = aluno_data["cursos"]
+    nome, whatsapp, email, cursos = aluno_data["nome"], aluno_data["whatsapp"], aluno_data["email"], aluno_data["cursos"]
+
+    enviar_callmebot("💰 Pagamento aprovado com sucesso.")
 
     token_unit = obter_token_unidade()
     aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)

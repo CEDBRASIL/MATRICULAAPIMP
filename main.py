@@ -174,7 +174,10 @@ def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) ->
             "frequency": 1,
             "frequency_type": "months",
             "transaction_amount": 49.90,
-            "currency_id": "BRL"
+            "currency_id": "BRL",
+            "payment_methods_allowed": {
+                "payment_types": ["ticket", "credit_card"]  # Adiciona boleto bancário e cartão de crédito
+            }
         },
         "back_url": "https://www.cedbrasilia.com.br/obrigado",
         "notification_url": "https://matriculaapimp.onrender.com/webhook"

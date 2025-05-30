@@ -106,15 +106,20 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str,
         }
         r = requests.post(f"{OM_BASE}/alunos", data=payload,
                           headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)
-        log(f"[CAD] tent {i+1}/60 | {r.status_code}")
+        log(f"[CAD] tent {i+1}/60 | {r.status_code} | {r.text[:300]}")
+        
         if r.ok and r.json().get("status") == "true":
             aluno_id = r.json()["data"]["id"]
             if matricular_aluno(aluno_id, cursos, token_key):
                 enviar_callmebot("✅ Matrícula gerada com sucesso.")
                 return aluno_id, cpf
-        if "já está em uso" not in (r.json() or {}).get("info", "").lower():
-            break
+        else:
+            info = (r.json() or {}).get("info", "").lower()
+            if "já está em uso" not in info:
+                log(f"[CAD] Falha no cadastro: {info}")
+                break
     return None, None
+
 
 def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
     payload = {"token": token_key, "cursos": ",".join(map(str, cursos))}

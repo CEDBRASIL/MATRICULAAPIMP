@@ -11,7 +11,7 @@ app = FastAPI()
 # ─────────── CORS ─────────── #
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # ajuste p/ domínio do site em produção
+    allow_origins=["*"],  # ajuste p/ domínio do site em produção
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
@@ -35,6 +35,7 @@ sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
 class CheckoutData(BaseModel):
     nome: str
     whatsapp: str
+    email: str
     cursos: list[int]
 
 # ─────────── Utilidades ────── #
@@ -69,11 +70,10 @@ def proximo_cpf(incr: int = 0) -> str:
         return CPF_PREFIXO + str(seq).zfill(3)
 
 # ─────────── Cadastro & Matrícula ────── #
-def cadastrar_aluno(nome: str, whatsapp: str, token_key: str,
+def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str,
                     cursos: list[int]) -> tuple[str | None, str | None]:
     for i in range(60):
         cpf = proximo_cpf(i)
-        email = f"{cpf}@cedbrasilia.com.br"
         payload = {
             "token": token_key,
             "nome": nome,
@@ -100,7 +100,7 @@ def cadastrar_aluno(nome: str, whatsapp: str, token_key: str,
             aluno_id = r.json()["data"]["id"]
             if matricular_aluno(aluno_id, cursos, token_key):
                 return aluno_id, cpf
-        if "já está em uso" not in (r.json()or{}).get("info","").lower():
+        if "já está em uso" not in (r.json() or {}).get("info", "").lower():
             break
     return None, None
 
@@ -113,9 +113,8 @@ def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
     return r.ok and r.json().get("status") == "true"
 
 # ─────────── Mercado Pago (assinatura) ───── #
-def criar_assinatura(nome: str, whatsapp: str, cursos: list[int]) -> str:
-    # Empacota dados do aluno no external_reference (base64 JSON)
-    data = {"nome": nome, "whatsapp": whatsapp, "cursos": cursos}
+def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) -> str:
+    data = {"nome": nome, "whatsapp": whatsapp, "email": email, "cursos": cursos}
     ext_ref = base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
     payload = {
         "reason": f"Assinatura CED – {nome}",
@@ -165,10 +164,9 @@ def montar_msg(nome: str, cpf: str, cursos: list[int]):
 # ─────────── Endpoints ───── #
 @app.post("/checkout")
 def checkout(data: CheckoutData):
-    link = criar_assinatura(data.nome, data.whatsapp, data.cursos)
+    link = criar_assinatura(data.nome, data.whatsapp, data.email, data.cursos)
     return {"status": "link-gerado", "mp_link": link}
 
-# Webhook de notificações Mercado Pago
 @app.post("/webhook")
 async def mp_webhook(req: Request):
     body = await req.json()
@@ -180,7 +178,6 @@ async def mp_webhook(req: Request):
     if not preapproval_id:
         return {"status": "sem id"}
 
-    # Recupera detalhes
     info = sdk.preapproval().get(preapproval_id)
     if info["status"] != 200:
         return {"status": "erro mp"}
@@ -189,15 +186,15 @@ async def mp_webhook(req: Request):
     if data.get("status") != "authorized":
         return {"status": "nao autorizado"}
 
-    # Extrai dados do external_reference
     ext_ref = data.get("external_reference")
     aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
-    nome      = aluno_data["nome"]
-    whatsapp  = aluno_data["whatsapp"]
-    cursos    = aluno_data["cursos"]
+    nome     = aluno_data["nome"]
+    whatsapp = aluno_data["whatsapp"]
+    email    = aluno_data["email"]
+    cursos   = aluno_data["cursos"]
 
     token_unit = obter_token_unidade()
-    aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, token_unit, cursos)
+    aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)
     if not aluno_id:
         log("❌ Webhook: falha cadastro após pagamento")
         return {"status": "falha_cadastro"}

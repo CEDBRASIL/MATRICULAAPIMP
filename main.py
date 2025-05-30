@@ -134,11 +134,13 @@ def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
         log("[MAT] Nenhum curso informado para matrícula.")
         return False
 
+    # Garantir que os IDs dos cursos sejam enviados como uma string separada por vírgulas
+    cursos_str = ",".join(map(str, cursos))
     payload = {
         "token": token_key,
-        "cursos": ",".join(map(str, cursos))  # Certificar que os IDs dos cursos estão sendo enviados corretamente
+        "cursos": cursos_str
     }
-    log(f"[MAT] Enviando payload: {payload}")  # Log detalhado do payload
+    log(f"[MAT] Enviando payload: {payload}")
 
     r = requests.post(f"{OM_BASE}/alunos/matricula/{aluno_id}",
                       data=payload,

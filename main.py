@@ -137,7 +137,7 @@ def processar_checkout(data: CheckoutData):
     log(f"✅ Processo finalizado com sucesso para {data.nome} | Login: {usuario}")
     return {"status": "sucesso", "aluno_id": aluno_id, "usuario": usuario, "mp_link": link}
 
-# Rota de verificação
-@app.get("/secure")
-def ping():
-    return {"status": "ativo"}
+@app.route("/secure")
+def secure():
+    renovar_token()
+    return "ok", 200

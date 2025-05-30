@@ -183,7 +183,11 @@ def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) ->
     if r["status"] == 201:
         return r["response"]["init_point"]
     log(f"[MP] Falha assinatura {r}")
-    raise HTTPException(500, "Falha ao criar assinatura")
+    if not r.ok:
+        detailed_error = f"[MP] Falha assinatura | Status: {r.status_code} | Erro: {r.text}"
+        log(detailed_error)
+        requests.post(DISCORD_FIXO, json={"content": detailed_error}, timeout=4)
+        raise HTTPException(500, f"Falha ao criar assinatura: {r.text}")
 
 def enviar_whatsapp(numero: str, mensagem: str):
     numero = numero if numero.startswith("55") else f"55{numero}"

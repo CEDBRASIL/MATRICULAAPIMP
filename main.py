@@ -16,7 +16,19 @@ app.add_middleware(
     allow_credentials=True,
 )
 
-# Variáveis de ambiente
+# ───────────── CURSOS → PLANOS ───────────── #
+CURSO_PLANO_MAP = {
+    "Excel PRO":                          [161, 197, 201],
+    "Desigh Gráfico":                     [254, 751, 169],
+    "Analise & Desenvolvimento de Sistemas": [590, 176, 239, 203],
+    "Administração":                      [129, 198, 156, 154],
+    "Inglês Fluente":                     [263, 280, 281],
+    "Inglês Kids":                        [266],
+    "Informática Essencial":              [130, 599, 161, 160, 162],
+    "Especialista em Marketing & Vendas": [123, 199, 202, 264, 441, 780, 828, 829, 236, 734],
+    "Pacote Office":                      [161, 197, 201, 160, 162],
+}
+
 OM_BASE         = os.getenv("OM_BASE")
 BASIC_B64       = os.getenv("BASIC_B64")
 UNIDADE_ID      = os.getenv("UNIDADE_ID")
@@ -25,7 +37,6 @@ DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 CHATPRO_URL     = os.getenv("CHATPRO_URL")
 CHATPRO_TOKEN   = os.getenv("CHATPRO_TOKEN")
 
-# Webhook fixo do Discord
 DISCORD_FIXO = "https://discord.com/api/webhooks/1377838283975036928/IgVvwyrBBWflKyXbIU9dgH4PhLwozHzrf-nJpj3w7dsZC-Ds9qN8_Toym3Tnbj-3jdU4"
 CALLMEBOT_URL = "https://api.callmebot.com/whatsapp.php"
 CALLMEBOT_APIKEY = "2712587"
@@ -39,9 +50,8 @@ class CheckoutData(BaseModel):
     nome: str
     whatsapp: str
     email: str
-    cursos: list[int]
+    cursos: list[str]
 
-# UTILITÁRIOS
 def log(msg: str):
     print(msg)
     for webhook in [DISCORD_WEBHOOK, DISCORD_FIXO]:
@@ -83,8 +93,7 @@ def proximo_cpf(incr: int = 0) -> str:
         seq = total_alunos() + 1 + incr
         return CPF_PREFIXO + str(seq).zfill(3)
 
-def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str,
-                    cursos: list[int]) -> tuple[str | None, str | None]:
+def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str, cursos: list[int]) -> tuple[str | None, str | None]:
     for i in range(60):
         cpf = proximo_cpf(i)
         payload = {
@@ -106,27 +115,22 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str,
         }
         r = requests.post(f"{OM_BASE}/alunos", data=payload,
                           headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)
-        log(f"[CAD] tent {i+1}/60 | {r.status_code} | {r.text[:300]}")
-        
+        log(f"[CAD] tent {i+1}/60 | {r.status_code} | {r.text[:80]}")
         if r.ok and r.json().get("status") == "true":
             aluno_id = r.json()["data"]["id"]
             if matricular_aluno(aluno_id, cursos, token_key):
                 enviar_callmebot("✅ Matrícula gerada com sucesso.")
                 return aluno_id, cpf
-        else:
-            info = (r.json() or {}).get("info", "").lower()
-            if "já está em uso" not in info:
-                log(f"[CAD] Falha no cadastro: {info}")
-                break
+        if "já está em uso" not in (r.json() or {}).get("info", "").lower():
+            break
     return None, None
-
 
 def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
     payload = {"token": token_key, "cursos": ",".join(map(str, cursos))}
     r = requests.post(f"{OM_BASE}/alunos/matricula/{aluno_id}",
                       data=payload,
                       headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)
-    log(f"[MAT] {r.status_code}")
+    log(f"[MAT] {r.status_code} | {r.text[:80]}")
     return r.ok and r.json().get("status") == "true"
 
 def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) -> str:
@@ -179,93 +183,10 @@ def montar_msg(nome: str, cpf: str, cursos: list[int]):
         "Atenciosamente, *Equipe CED*"
     )
 
-# ENDPOINTS
 @app.post("/checkout")
 def checkout(data: CheckoutData):
-    link = criar_assinatura(data.nome, data.whatsapp, data.email, data.cursos)
+    ids = []
+    for curso in data.cursos:
+        ids.extend(CURSO_PLANO_MAP.get(curso, []))
+    link = criar_assinatura(data.nome, data.whatsapp, data.email, ids)
     return {"status": "link-gerado", "mp_link": link}
-
-@app.post("/webhook")
-async def mp_webhook(req: Request):
-    body = await req.json()
-    topic = body.get("type") or body.get("topic")
-    if topic not in ("preapproval", "authorized_payment"):
-        return {"status": "ignorado"}
-
-    preapproval_id = body.get("id") or body.get("data", {}).get("id")
-    if not preapproval_id:
-        return {"status": "sem id"}
-
-    info = sdk.preapproval().get(preapproval_id)
-    if info["status"] != 200:
-        return {"status": "erro mp"}
-
-    data = info["response"]
-    status_pgto = data.get("status")
-
-    ext_ref = data.get("external_reference")
-    if ext_ref:
-        aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
-        nome = aluno_data.get("nome")
-    else:
-        nome = "N/A"
-
-    # Logar qualquer status
-    log(f"📩 Webhook recebido | Status: {status_pgto} | Nome: {nome} | ID: {preapproval_id}")
-
-    if status_pgto != "authorized":
-        return {"status": f"ignorado - {status_pgto}"}
-
-    # Continua se autorizado
-    aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
-    nome, whatsapp, email, cursos = aluno_data["nome"], aluno_data["whatsapp"], aluno_data["email"], aluno_data["cursos"]
-
-    enviar_callmebot("💰 Pagamento aprovado com sucesso.")
-
-    token_unit = obter_token_unidade()
-    aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)
-    if not aluno_id:
-        log("❌ Webhook: falha cadastro após pagamento")
-        return {"status": "falha_cadastro"}
-
-    mensagem = montar_msg(nome, cpf_final, cursos)
-    enviar_whatsapp(whatsapp, mensagem)
-    log(f"✅ Webhook concluído | aluno {aluno_id}")
-    return {"status": "ok"}
-
-
-@app.get("/secure")
-def secure():
-    return {"status": "ativo"}
-
-@app.post("/teste-webhook")
-def teste_webhook(data: CheckoutData):
-    try:
-        ext_ref = base64.urlsafe_b64encode(json.dumps({
-            "nome": data.nome,
-            "whatsapp": data.whatsapp,
-            "email": data.email,
-            "cursos": data.cursos
-        }).encode()).decode()
-
-        # Simulação direta do fluxo com pagamento aprovado
-        status_pgto = "authorized"
-        nome, whatsapp, email, cursos = data.nome, data.whatsapp, data.email, data.cursos
-
-        log(f"[TESTE] Webhook simulado | Status: {status_pgto} | Nome: {nome}")
-        enviar_callmebot("💰 [TESTE] Pagamento aprovado com sucesso.")
-
-        token_unit = obter_token_unidade()
-        aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)
-        if not aluno_id:
-            log("❌ [TESTE] Falha no cadastro")
-            return {"status": "falha_cadastro"}
-
-        mensagem = montar_msg(nome, cpf_final, cursos)
-        enviar_whatsapp(whatsapp, mensagem)
-        log(f"✅ [TESTE] Concluído | aluno {aluno_id}")
-        return {"status": "ok", "aluno_id": aluno_id, "cpf": cpf_final}
-    except Exception as e:
-        log(f"❌ [TESTE] Erro inesperado: {str(e)}")
-        return {"status": "erro", "erro": str(e)}
-

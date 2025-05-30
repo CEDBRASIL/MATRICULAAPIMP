@@ -130,7 +130,14 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str, cursos
     return None, None
 
 def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
-    payload = {"token": token_key, "cursos": ",".join(map(str, cursos))}
+    if not cursos:
+        log("[MAT] Nenhum curso informado para matrícula.")
+        return False
+
+    payload = {
+        "token": token_key,
+        "cursos": ",".join(map(str, cursos))  # Certificar que os IDs dos cursos estão sendo enviados corretamente
+    }
     r = requests.post(f"{OM_BASE}/alunos/matricula/{aluno_id}",
                       data=payload,
                       headers={"Authorization": f"Basic {BASIC_B64}"}, timeout=10)

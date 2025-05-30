@@ -12,9 +12,8 @@ app = FastAPI()
 
 # Variáveis de ambiente
 OM_BASE = os.getenv("OM_BASE")  # https://meuappdecursos.com.br/ws/v2
-BASIC_B64 = os.getenv("BASIC_B64")  # Authorization
-TOKEN_KEY = os.getenv("TOKEN_KEY")  # Token da unidade
-UNIDADE_ID = os.getenv("UNIDADE_ID")
+BASIC_B64 = os.getenv("BASIC_B64")  # Basic Auth para pegar token
+UNIDADE_ID = os.getenv("UNIDADE_ID")  # Exemplo: 4158
 MP_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 
@@ -36,8 +35,21 @@ def log(mensagem: str):
     except Exception as e:
         print(f"Erro ao logar no Discord: {e}")
 
+# Função para obter token dinâmico da unidade
+def obter_token() -> str:
+    url = f"{OM_BASE}/unidades/token/{UNIDADE_ID}"
+    headers = {"Authorization": f"Basic {BASIC_B64}"}
+    r = requests.get(url, headers=headers)
+    if r.ok and r.json().get("status") == "true":
+        token = r.json()["data"]["token"]
+        log(f"[TOKEN] Token atualizado: {token}")
+        return token
+    else:
+        log(f"Erro ao obter token: {r.status_code} {r.text}")
+        raise RuntimeError("Não foi possível obter token da unidade")
+
 # Função: Total de alunos
-def total_alunos() -> int:
+def total_alunos(token_key: str) -> int:
     url = f"{OM_BASE}/alunos/total/{UNIDADE_ID}"
     r = requests.get(url, headers={"Authorization": f"Basic {BASIC_B64}"})
     if r.ok and r.json().get("status") == "true":
@@ -52,17 +64,17 @@ def total_alunos() -> int:
 # Geração automática de CPF
 def proximo_cpf(incremento: int = 0) -> str:
     with cpf_lock:
-        seq = total_alunos() + 1 + incremento
+        seq = total_alunos(TOKEN_KEY) + 1 + incremento
         return CPF_PREFIXO + str(seq).zfill(3)
 
 # Cadastro com tentativa e email fictício
-def cadastrar_aluno(nome: str, whatsapp: str, tentativas: int = 60) -> tuple[str | None, str | None]:
+def cadastrar_aluno(nome: str, whatsapp: str, token_key: str, tentativas: int = 60) -> tuple[str | None, str | None]:
     for i in range(tentativas):
         cpf = proximo_cpf(i)
         login = cpf
         email = f"{login}@cedbrasilia.com.br"
         cadastro = {
-            "token": TOKEN_KEY,
+            "token": token_key,
             "nome": nome,
             "email": email,
             "whatsapp": whatsapp,
@@ -94,9 +106,9 @@ def cadastrar_aluno(nome: str, whatsapp: str, tentativas: int = 60) -> tuple[str
     return None, None
 
 # Matrícula
-def matricular_aluno(aluno_id: str, cursos: list[int]) -> bool:
+def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
     payload = {
-        "token": TOKEN_KEY,
+        "token": token_key,
         "cursos": ",".join(map(str, cursos))
     }
     url = f"{OM_BASE}/alunos/matricula/{aluno_id}"
@@ -123,11 +135,12 @@ def criar_preferencia_mp(titulo: str, preco: float):
 # Rota principal
 @app.post("/checkout")
 def processar_checkout(data: CheckoutData):
-    aluno_id, usuario = cadastrar_aluno(data.nome, data.whatsapp)
+    token_key = obter_token()  # Obtém token atualizado
+    aluno_id, usuario = cadastrar_aluno(data.nome, data.whatsapp, token_key)
     if not aluno_id:
         raise HTTPException(status_code=400, detail="Falha ao cadastrar aluno")
 
-    if not matricular_aluno(aluno_id, data.cursos):
+    if not matricular_aluno(aluno_id, data.cursos, token_key):
         raise HTTPException(status_code=400, detail="Falha ao matricular aluno")
 
     link = criar_preferencia_mp(f"Matrícula - {data.nome}", 59.90)
@@ -137,7 +150,7 @@ def processar_checkout(data: CheckoutData):
     log(f"✅ Processo finalizado com sucesso para {data.nome} | Login: {usuario}")
     return {"status": "sucesso", "aluno_id": aluno_id, "usuario": usuario, "mp_link": link}
 
-@app.route("/secure")
-def secure():
-    renovar_token()
-    return "ok", 200
+# Rota de verificação
+@app.get("/secure")
+def ping():
+    return {"status": "ativo"}

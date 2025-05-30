@@ -164,6 +164,14 @@ def matricular_aluno(aluno_id: str, cursos: list[str], token_key: str) -> bool:
     return r.ok and r.json().get("status") == "true"
 
 def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) -> str:
+    # Verificar se estamos em modo de teste
+    is_test_mode = os.getenv("TEST_MODE", "false").lower() == "true"
+
+    # Dados do produto e URLs ajustados para o modo de teste
+    transaction_amount = 49.90 if not is_test_mode else 1.00  # Valor simbólico para teste
+    back_url = "https://www.cedbrasilia.com.br/obrigado" if not is_test_mode else "https://www.test.com/obrigado"
+    notification_url = "https://matriculaapimp.onrender.com/webhook" if not is_test_mode else "https://www.test.com/webhook"
+
     data = {"nome": nome, "whatsapp": whatsapp, "email": email, "cursos": cursos}
     ext_ref = base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
     payload = {
@@ -173,14 +181,14 @@ def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) ->
         "auto_recurring": {
             "frequency": 1,
             "frequency_type": "months",
-            "transaction_amount": 49.90,
+            "transaction_amount": transaction_amount,
             "currency_id": "BRL",
             "payment_methods_allowed": {
                 "payment_types": ["ticket", "credit_card"]  # Adiciona boleto bancário e cartão de crédito
             }
         },
-        "back_url": "https://www.cedbrasilia.com.br/obrigado",
-        "notification_url": "https://matriculaapimp.onrender.com/webhook"
+        "back_url": back_url,
+        "notification_url": notification_url
     }
     r = sdk.preapproval().create(payload)
     if r["status"] == 201:

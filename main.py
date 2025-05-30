@@ -123,14 +123,13 @@ def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) ->
     "auto_recurring": {
         "frequency": 1,
         "frequency_type": "months",
-        "transaction_amount": 59.90,
+        "transaction_amount": 49.90,
         "currency_id": "BRL"
     },
     "back_url": "https://www.cedbrasilia.com.br/obrigado",
     "notification_url": "https://matriculaapimp.onrender.com/webhook"
 }
 
-    }
     r = sdk.preapproval().create(payload)
     if r["status"] == 201:
         return r["response"]["init_point"]

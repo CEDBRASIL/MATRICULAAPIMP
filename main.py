@@ -117,16 +117,19 @@ def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) ->
     data = {"nome": nome, "whatsapp": whatsapp, "email": email, "cursos": cursos}
     ext_ref = base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
     payload = {
-        "reason": f"Assinatura CED – {nome}",
-        "external_reference": ext_ref,
-        "auto_recurring": {
-            "frequency": 1,
-            "frequency_type": "months",
-            "transaction_amount": 49.90,
-            "currency_id": "BRL"
-        },
-        "back_url": "https://www.cedbrasilia.com.br/obrigado",
-        "notification_url": "https://matriculaapimp.onrender.com/webhook"
+    "reason": f"Assinatura CED – {nome}",
+    "external_reference": ext_ref,
+    "payer_email": email,
+    "auto_recurring": {
+        "frequency": 1,
+        "frequency_type": "months",
+        "transaction_amount": 59.90,
+        "currency_id": "BRL"
+    },
+    "back_url": "https://www.cedbrasilia.com.br/obrigado",
+    "notification_url": "https://matriculaapimp.onrender.com/webhook"
+}
+
     }
     r = sdk.preapproval().create(payload)
     if r["status"] == 201:

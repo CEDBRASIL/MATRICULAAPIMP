@@ -232,3 +232,35 @@ async def mp_webhook(req: Request):
 @app.get("/secure")
 def secure():
     return {"status": "ativo"}
+
+@app.post("/teste-webhook")
+def teste_webhook(data: CheckoutData):
+    try:
+        ext_ref = base64.urlsafe_b64encode(json.dumps({
+            "nome": data.nome,
+            "whatsapp": data.whatsapp,
+            "email": data.email,
+            "cursos": data.cursos
+        }).encode()).decode()
+
+        # Simulação direta do fluxo com pagamento aprovado
+        status_pgto = "authorized"
+        nome, whatsapp, email, cursos = data.nome, data.whatsapp, data.email, data.cursos
+
+        log(f"[TESTE] Webhook simulado | Status: {status_pgto} | Nome: {nome}")
+        enviar_callmebot("💰 [TESTE] Pagamento aprovado com sucesso.")
+
+        token_unit = obter_token_unidade()
+        aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)
+        if not aluno_id:
+            log("❌ [TESTE] Falha no cadastro")
+            return {"status": "falha_cadastro"}
+
+        mensagem = montar_msg(nome, cpf_final, cursos)
+        enviar_whatsapp(whatsapp, mensagem)
+        log(f"✅ [TESTE] Concluído | aluno {aluno_id}")
+        return {"status": "ok", "aluno_id": aluno_id, "cpf": cpf_final}
+    except Exception as e:
+        log(f"❌ [TESTE] Erro inesperado: {str(e)}")
+        return {"status": "erro", "erro": str(e)}
+

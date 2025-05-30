@@ -63,6 +63,7 @@ def cadastrar_aluno(nome: str, whatsapp: str, tentativas: int = 60) -> tuple[int
             "token": TOKEN_KEY,
             "nome": nome,
             "data_nascimento": "2000-01-01",
+            "email": "",
             "fone": whatsapp,
             "celular": whatsapp,
             "doc_cpf": cpf,

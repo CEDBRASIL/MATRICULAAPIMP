@@ -55,7 +55,7 @@ async function enviarCheckout() {
     } else {
       const erroMsg = resultado.detail || resultado.message || JSON.stringify(resultado);
       mostrarMsg(`❌ Erro: ${erroMsg}`, false);
-      await enviarLogDiscord(`❌ Falha na matrícula para: **${nome}** | Erro: ${erroMsg}`);
+      await enviarLogDiscord(`❌ Falha na matrícula para: **${nome}** Entre em contato conosco para mais informações. | Erro: ${erroMsg}`);
     }
   } catch (erro) {
     console.error("Erro na requisição:", erro);

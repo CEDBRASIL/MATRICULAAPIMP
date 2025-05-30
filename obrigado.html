@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obrigado pela Matrícula!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #121212; /* Fundo escuro */
+      color: #e0e0e0; /* Texto claro */
+    }
+    .card {
+      background-color: #1e1e1e; /* Fundo do card */
+      border: 1px solid #2e2e2e; /* Borda sutil */
+    }
+    .card h1 {
+      color: #00ff88; /* Verde vibrante */
+    }
+    .button {
+      background-color: #00ff88; /* Botão verde */
+      color: #121212; /* Texto escuro */
+    }
+    .button:hover {
+      background-color: #00cc6e; /* Botão verde mais escuro ao passar o mouse */
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="card w-full max-w-xl rounded-2xl shadow-xl p-8 space-y-6 text-center">
+    <h1 class="text-3xl font-bold">Obrigado pela sua Matrícula!</h1>
+    <p class="text-lg">Sua matrícula foi concluída com sucesso. Abaixo estão suas informações de login:</p>
+
+    <div class="bg-gray-800 p-4 rounded-lg text-left">
+      <p><strong>Usuário:</strong> <span id="userEmail">seuemail@exemplo.com</span></p>
+      <p><strong>Senha:</strong> <span id="userPassword">********</span></p>
+    </div>
+
+    <p class="text-sm text-gray-400">Guarde essas informações em um local seguro.</p>
+
+    <a href="https://www.cedbrasilia.com.br/login" class="button w-full font-semibold p-3 rounded-lg transition block text-center">
+      Acessar Plataforma
+    </a>
+  </div>
+</body>
+</html>

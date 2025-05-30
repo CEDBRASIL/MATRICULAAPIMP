@@ -6,29 +6,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CED – Matrícula Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #121212; /* Fundo escuro */
+      color: #e0e0e0; /* Texto claro */
+    }
+    .card {
+      background-color: #1e1e1e; /* Fundo do card */
+      border: 1px solid #2e2e2e; /* Borda sutil */
+    }
+    .card h1 {
+      color: #00ff88; /* Verde vibrante */
+    }
+    .input {
+      background-color: #2e2e2e; /* Fundo dos inputs */
+      color: #e0e0e0; /* Texto dos inputs */
+      border: 1px solid #3e3e3e; /* Borda dos inputs */
+    }
+    .input:focus {
+      border-color: #00ff88; /* Borda verde ao focar */
+      outline: none;
+    }
+    .button {
+      background-color: #00ff88; /* Botão verde */
+      color: #121212; /* Texto escuro */
+    }
+    .button:hover {
+      background-color: #00cc6e; /* Botão verde mais escuro ao passar o mouse */
+    }
+    .msg {
+      color: #00ff88; /* Mensagem de sucesso */
+    }
+    .msg.error {
+      color: #ff4444; /* Mensagem de erro */
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-xl rounded-2xl shadow-xl bg-white p-8 space-y-6">
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="card w-full max-w-xl rounded-2xl shadow-xl p-8 space-y-6">
     <h1 class="text-2xl font-bold text-center">Matrícula – Centro de Ensino Digital</h1>
 
     <form id="formCheckout" class="space-y-4" onsubmit="event.preventDefault(); enviarCheckout();">
-      <input id="nome" type="text" placeholder="Nome completo" required class="w-full border rounded p-3" />
-      <input id="email" type="email" placeholder="E-mail" required class="w-full border rounded p-3" />
-      <input id="whatsapp" type="tel" placeholder="WhatsApp com DDD" required class="w-full border rounded p-3" />
+      <input id="nome" type="text" placeholder="Nome completo" required class="input w-full rounded p-3" />
+      <input id="email" type="email" placeholder="E-mail" required class="input w-full rounded p-3" />
+      <input id="whatsapp" type="tel" placeholder="WhatsApp com DDD" required class="input w-full rounded p-3" />
 
       <fieldset>
         <legend class="font-semibold mb-2">Selecione os cursos:</legend>
         <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Administração" /> Administração</label>
-          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Informática Essencial" /> Informática Essencial</label>
-          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Pacote Office" /> Pacote Office</label>
-          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Design Gráfico" /> Design Gráfico</label>
-          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="ADS" /> ADS</label>
-          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Inglês Fluente" /> Inglês Fluente</label>
+          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Administração" class="input" /> Administração</label>
+          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Informática Essencial" class="input" /> Informática Essencial</label>
+          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Pacote Office" class="input" /> Pacote Office</label>
+          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Design Gráfico" class="input" /> Design Gráfico</label>
+          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="ADS" class="input" /> ADS</label>
+          <label class="flex items-center gap-2"><input type="checkbox" name="curso" value="Inglês Fluente" class="input" /> Inglês Fluente</label>
         </div>
       </fieldset>
 
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition">
+      <button type="submit" class="button w-full font-semibold p-3 rounded-lg transition">
         Concluir Matrícula
       </button>
     </form>

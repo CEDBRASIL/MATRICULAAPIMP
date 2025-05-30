@@ -190,3 +190,86 @@ def checkout(data: CheckoutData):
         ids.extend(CURSO_PLANO_MAP.get(curso, []))
     link = criar_assinatura(data.nome, data.whatsapp, data.email, ids)
     return {"status": "link-gerado", "mp_link": link}
+
+@app.get("/secure")
+def secure():
+    return {"status": "ativo"}
+
+@app.post("/teste-webhook")
+def teste_webhook(data: CheckoutData):
+    try:
+        ext_ref = base64.urlsafe_b64encode(json.dumps({
+            "nome": data.nome,
+            "whatsapp": data.whatsapp,
+            "email": data.email,
+            "cursos": data.cursos
+        }).encode()).decode()
+
+        # Simulação direta do fluxo com pagamento aprovado
+        status_pgto = "authorized"
+        nome, whatsapp, email, cursos = data.nome, data.whatsapp, data.email, data.cursos
+
+        log(f"[TESTE] Webhook simulado | Status: {status_pgto} | Nome: {nome}")
+        enviar_callmebot("💰 [TESTE] Pagamento aprovado com sucesso.")
+
+        token_unit = obter_token_unidade()
+        aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)
+        if not aluno_id:
+            log("❌ [TESTE] Falha no cadastro")
+            return {"status": "falha_cadastro"}
+
+        mensagem = montar_msg(nome, cpf_final, cursos)
+        enviar_whatsapp(whatsapp, mensagem)
+        log(f"✅ [TESTE] Concluído | aluno {aluno_id}")
+        return {"status": "ok", "aluno_id": aluno_id, "cpf": cpf_final}
+    except Exception as e:
+        log(f"❌ [TESTE] Erro inesperado: {str(e)}")
+        return {"status": "erro", "erro": str(e)}
+
+@app.post("/webhook")
+async def mp_webhook(req: Request):
+    body = await req.json()
+    topic = body.get("type") or body.get("topic")
+    if topic not in ("preapproval", "authorized_payment"):
+        return {"status": "ignorado"}
+
+    preapproval_id = body.get("id") or body.get("data", {}).get("id")
+    if not preapproval_id:
+        return {"status": "sem id"}
+
+    info = sdk.preapproval().get(preapproval_id)
+    if info["status"] != 200:
+        return {"status": "erro mp"}
+
+    data = info["response"]
+    status_pgto = data.get("status")
+
+    ext_ref = data.get("external_reference")
+    if ext_ref:
+        aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
+        nome = aluno_data.get("nome")
+    else:
+        nome = "N/A"
+
+    # Logar qualquer status
+    log(f"📩 Webhook recebido | Status: {status_pgto} | Nome: {nome} | ID: {preapproval_id}")
+
+    if status_pgto != "authorized":
+        return {"status": f"ignorado - {status_pgto}"}
+
+    # Continua se autorizado
+    aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
+    nome, whatsapp, email, cursos = aluno_data["nome"], aluno_data["whatsapp"], aluno_data["email"], aluno_data["cursos"]
+
+    enviar_callmebot("💰 Pagamento aprovado com sucesso.")
+
+    token_unit = obter_token_unidade()
+    aluno_id, cpf_final = cadastrar_aluno(nome, whatsapp, email, token_unit, cursos)
+    if not aluno_id:
+        log("❌ Webhook: falha cadastro após pagamento")
+        return {"status": "falha_cadastro"}
+
+    mensagem = montar_msg(nome, cpf_final, cursos)
+    enviar_whatsapp(whatsapp, mensagem)
+    log(f"✅ Webhook concluído | aluno {aluno_id}")
+    return {"status": "ok"}

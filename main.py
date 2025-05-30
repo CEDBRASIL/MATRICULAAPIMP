@@ -115,6 +115,8 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str, cursos
             "complemento": "",
             "numero": "0",
             "unidade_id":"4158",
+            "senha": "123456"  # Set default password
+            
 
         }
         r = requests.post(f"{OM_BASE}/alunos", data=payload,

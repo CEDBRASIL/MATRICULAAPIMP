@@ -129,13 +129,22 @@ def cadastrar_aluno(nome: str, whatsapp: str, email: str, token_key: str, cursos
             break
     return None, None
 
-def matricular_aluno(aluno_id: str, cursos: list[int], token_key: str) -> bool:
+def matricular_aluno(aluno_id: str, cursos: list[str], token_key: str) -> bool:
     if not cursos:
         log("[MAT] Nenhum curso informado para matrícula.")
         return False
 
+    # Mapear os nomes dos cursos para seus respectivos IDs
+    cursos_ids = []
+    for curso in cursos:
+        cursos_ids.extend(CURSO_PLANO_MAP.get(curso, []))
+
+    if not cursos_ids:
+        log("[MAT] Nenhum ID de curso válido encontrado.")
+        return False
+
     # Garantir que os IDs dos cursos sejam enviados como uma string separada por vírgulas
-    cursos_str = ",".join(map(str, cursos))
+    cursos_str = ",".join(map(str, cursos_ids))
     payload = {
         "token": token_key,
         "cursos": cursos_str

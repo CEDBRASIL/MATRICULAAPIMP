@@ -196,10 +196,22 @@ async def mp_webhook(req: Request):
         return {"status": "erro mp"}
 
     data = info["response"]
-    if data.get("status") != "authorized":
-        return {"status": "nao autorizado"}
+    status_pgto = data.get("status")
 
     ext_ref = data.get("external_reference")
+    if ext_ref:
+        aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
+        nome = aluno_data.get("nome")
+    else:
+        nome = "N/A"
+
+    # Logar qualquer status
+    log(f"📩 Webhook recebido | Status: {status_pgto} | Nome: {nome} | ID: {preapproval_id}")
+
+    if status_pgto != "authorized":
+        return {"status": f"ignorado - {status_pgto}"}
+
+    # Continua se autorizado
     aluno_data = json.loads(base64.urlsafe_b64decode(ext_ref).decode())
     nome, whatsapp, email, cursos = aluno_data["nome"], aluno_data["whatsapp"], aluno_data["email"], aluno_data["cursos"]
 
@@ -215,6 +227,7 @@ async def mp_webhook(req: Request):
     enviar_whatsapp(whatsapp, mensagem)
     log(f"✅ Webhook concluído | aluno {aluno_id}")
     return {"status": "ok"}
+
 
 @app.get("/secure")
 def secure():

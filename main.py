@@ -37,6 +37,8 @@ DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 CHATPRO_URL     = os.getenv("CHATPRO_URL")
 CHATPRO_TOKEN   = os.getenv("CHATPRO_TOKEN")
 
+print(MP_ACCESS_TOKEN)
+
 DISCORD_FIXO = "https://discord.com/api/webhooks/1377838283975036928/IgVvwyrBBWflKyXbIU9dgH4PhLwozHzrf-nJpj3w7dsZC-Ds9qN8_Toym3Tnbj-3jdU4"
 CALLMEBOT_URL = "https://api.callmebot.com/whatsapp.php"
 CALLMEBOT_APIKEY = "2712587"

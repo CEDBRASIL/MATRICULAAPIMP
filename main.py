@@ -52,7 +52,7 @@ sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
 is_test_mode = MP_ACCESS_TOKEN.startswith("TEST-")
 
 # Ajustar URLs e valores para o ambiente de teste
-back_url = "https://www.test.com/obrigado" if is_test_mode else "https://www.cedbrasilia.com.br/obrigado"
+back_url = "https://www.cedbrasilia.com/obrigado" if is_test_mode else "https://www.cedbrasilia.com.br/obrigado"
 notification_url = "https://www.test.com/webhook" if is_test_mode else "https://matriculaapimp.onrender.com/webhook"
 transaction_amount = 1.00 if is_test_mode else 49.90
 

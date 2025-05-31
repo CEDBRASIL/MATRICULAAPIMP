@@ -46,6 +46,11 @@ CALLMEBOT_PHONE = "+556186660241"
 
 CPF_PREFIXO = "20254158"
 cpf_lock = threading.Lock()
+
+# Ensure MP_ACCESS_TOKEN is loaded and valid
+if not MP_ACCESS_TOKEN or not isinstance(MP_ACCESS_TOKEN, str):
+    raise ValueError("Environment variable 'MP_ACCESS_TOKEN' must be set and must be a valid string.")
+
 sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
 
 # Ajuste para garantir que o ambiente de teste seja usado
@@ -319,3 +324,8 @@ async def mp_webhook(req: Request):
     enviar_whatsapp(whatsapp, mensagem)
     log(f"✅ Webhook concluído | aluno {aluno_id}")
     return {"status": "ok"}
+
+# Ensure the environment variable is loaded correctly
+if not MP_ACCESS_TOKEN:
+    log("[ERROR] MP_ACCESS_TOKEN is not set. Please check your environment variables.")
+    raise ValueError("MP_ACCESS_TOKEN is not set. Ensure it is defined in the environment or .env file.")

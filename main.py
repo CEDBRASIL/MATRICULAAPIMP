@@ -46,7 +46,15 @@ CALLMEBOT_PHONE = "+556186660241"
 
 CPF_PREFIXO = "20254158"
 cpf_lock = threading.Lock()
-sdk = mercadopago.SDK("TEST-4705638445569453-052018-a75b3a985ac34cfc976e822cec0c4d57-2335471951")
+sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
+
+# Ajuste para garantir que o ambiente de teste seja usado
+is_test_mode = MP_ACCESS_TOKEN.startswith("TEST-")
+
+# Ajustar URLs e valores para o ambiente de teste
+back_url = "https://www.test.com/obrigado" if is_test_mode else "https://www.cedbrasilia.com.br/obrigado"
+notification_url = "https://www.test.com/webhook" if is_test_mode else "https://matriculaapimp.onrender.com/webhook"
+transaction_amount = 1.00 if is_test_mode else 49.90
 
 class CheckoutData(BaseModel):
     nome: str
@@ -166,14 +174,6 @@ def matricular_aluno(aluno_id: str, cursos: list[str], token_key: str) -> bool:
     return r.ok and r.json().get("status") == "true"
 
 def criar_assinatura(nome: str, whatsapp: str, email: str, cursos: list[int]) -> str:
-    # Verificar se estamos em modo de teste
-    is_test_mode = os.getenv("TEST_MODE", "false").lower() == "true"
-
-    # Dados do produto e URLs ajustados para o modo de teste
-    transaction_amount = 49.90 if not is_test_mode else 1.00  # Valor simbólico para teste
-    back_url = "https://www.cedbrasilia.com.br/obrigado" if not is_test_mode else "https://www.test.com/obrigado"
-    notification_url = "https://matriculaapimp.onrender.com/webhook" if not is_test_mode else "https://www.test.com/webhook"
-
     data = {"nome": nome, "whatsapp": whatsapp, "email": email, "cursos": cursos}
     ext_ref = base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
     payload = {

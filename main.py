@@ -45,7 +45,6 @@ CALLMEBOT_PHONE = "+556186660241"
 CPF_PREFIXO = "20254158"
 cpf_lock = threading.Lock()
 sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
-sdk.set_sandbox_mode(True)
 
 class CheckoutData(BaseModel):
     nome: str
